@@ -9,35 +9,46 @@ version = "0.1.0"
 [compatibility]
 horizon_revision = "0a6e409923e72d66105ff21878fe5dc52b1b4b4c"
 
-# ChatComponent.addMessageToQueue: `self.messages.truncate(100)`
+# ChatComponent.addMessageToQueue: `self.messages.truncate(100)`. The function has println!,
+# which the constant rewrite refuses, so a cancellable HEAD runs a copy of its body with the new limit
+# and skips the original.
 [[injection]]
 id = "messages"
-target = "horizon_client_render::chat::Chat::add_message"
-kind = "MODIFY_CONSTANT"
-selector = "100"
-require = 1
-ordinal = 0
+target = "horizon_client_render::chat::Chat::push_message"
+kind = "HEAD"
+cancellable = true
 helper = "limit_messages.rs"
-bindings = [{ name = "value", ty = "usize", value = "$value" }]
+bindings = [
+  { name = "chat", ty = "&mut Chat", value = "&mut *self" },
+  { name = "font", ty = "&crate::font::Font", value = "font" },
+  { name = "message", ty = "&Message", value = "&message" },
+  { name = "focused", ty = "bool", value = "focused" },
+]
 
-# ChatComponent.addMessageToDisplayQueue: `self.lines.truncate(100)`
+# ChatComponent.addMessageToDisplayQueue: `self.lines.truncate(100)`. add_lines has a closure,
+# so it gets a copy of its body as well.
 [[injection]]
 id = "lines"
 target = "horizon_client_render::chat::Chat::add_lines"
-kind = "MODIFY_CONSTANT"
-selector = "100"
-require = 1
-ordinal = 0
+kind = "HEAD"
+cancellable = true
 helper = "limit_lines.rs"
-bindings = [{ name = "value", ty = "usize", value = "$value" }]
+bindings = [
+  { name = "chat", ty = "&mut Chat", value = "&mut *self" },
+  { name = "font", ty = "&crate::font::Font", value = "font" },
+  { name = "message", ty = "&Message", value = "message" },
+  { name = "focused", ty = "bool", value = "focused" },
+]
 
-# ChatComponent.addRecentChat: the sent messages the up arrow walks through
+# ChatComponent.addRecentChat: the sent messages the up arrow walks through (log::error! in
+# its body: same treatment).
 [[injection]]
 id = "recent"
 target = "horizon_client_render::chat::Chat::add_recent"
-kind = "MODIFY_CONSTANT"
-selector = "100"
-require = 1
-ordinal = 0
+kind = "HEAD"
+cancellable = true
 helper = "limit_recent.rs"
-bindings = [{ name = "value", ty = "usize", value = "$value" }]
+bindings = [
+  { name = "chat", ty = "&mut Chat", value = "&mut *self" },
+  { name = "message", ty = "&str", value = "message" },
+]
