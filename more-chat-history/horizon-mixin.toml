@@ -1,0 +1,43 @@
+# More Chat History: raises the chat's remembered messages, wrapped lines and
+# sent-message history from vanilla's 100 to 16384. A plain mixin bundle (no trait
+# mod): three MODIFY_CONSTANT injections on the `100` of the chat's trimming code.
+# Pinned to the Horizon commit whose source the selectors were checked against.
+[mod]
+id = "more_chat_history"
+version = "0.1.0"
+
+[compatibility]
+horizon_revision = "0a6e409923e72d66105ff21878fe5dc52b1b4b4c"
+
+# ChatComponent.addMessageToQueue: `self.messages.truncate(100)`
+[[injection]]
+id = "messages"
+target = "horizon_client_render::chat::Chat::add_message"
+kind = "MODIFY_CONSTANT"
+selector = "100"
+require = 1
+ordinal = 0
+helper = "limit_messages.rs"
+bindings = [{ name = "value", ty = "usize", value = "$value" }]
+
+# ChatComponent.addMessageToDisplayQueue: `self.lines.truncate(100)`
+[[injection]]
+id = "lines"
+target = "horizon_client_render::chat::Chat::add_lines"
+kind = "MODIFY_CONSTANT"
+selector = "100"
+require = 1
+ordinal = 0
+helper = "limit_lines.rs"
+bindings = [{ name = "value", ty = "usize", value = "$value" }]
+
+# ChatComponent.addRecentChat: the sent messages the up arrow walks through
+[[injection]]
+id = "recent"
+target = "horizon_client_render::chat::Chat::add_recent"
+kind = "MODIFY_CONSTANT"
+selector = "100"
+require = 1
+ordinal = 0
+helper = "limit_recent.rs"
+bindings = [{ name = "value", ty = "usize", value = "$value" }]
