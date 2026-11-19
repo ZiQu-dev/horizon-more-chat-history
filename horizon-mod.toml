@@ -1,0 +1,58 @@
+id = "more_chat_history"
+name = "More Chat History"
+version = "0.1.0"
+description = "Raises the chat history from vanilla's 100 messages to 16384."
+authors = ["ZiQu-dev"]
+api = "0.2"
+side = "client"
+# The manifest format requires this value; the mod registers nothing.
+capabilities = ["registries"]
+
+[native]
+game = "26.3"
+# The first build with #[replaceable] on Chat::push_message, add_lines and add_recent
+# (horizon-rust/horizon#18356, merged as 39f1a51b3c): move this to the first Nightly that has it.
+horizon = "39f1a51b3c5f0452bf5ae2ec606bcb8bddc58c4d"
+mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"
+
+# Chat::push_message: `self.messages.truncate(100)`. Its body has println!, which the constant
+# rewrite refuses, so a cancellable HEAD runs a copy of the body with the new limit and skips the original.
+[[native.mixin]]
+id = "messages"
+target = "horizon_client_render::chat::Chat::push_message"
+kind = "HEAD"
+cancellable = true
+helper = "src/mixins/limit_messages.rs"
+bindings = [
+  { name = "chat", ty = "&mut Chat", value = "&mut *self" },
+  { name = "font", ty = "&crate::font::Font", value = "font" },
+  { name = "message", ty = "&Message", value = "&message" },
+  { name = "focused", ty = "bool", value = "focused" },
+]
+
+# Chat::add_lines: `self.lines.truncate(100)`. It has a closure: same treatment. Also runs for rewrap
+# (window resize, chat options, search, a server deleting a message).
+[[native.mixin]]
+id = "lines"
+target = "horizon_client_render::chat::Chat::add_lines"
+kind = "HEAD"
+cancellable = true
+helper = "src/mixins/limit_lines.rs"
+bindings = [
+  { name = "chat", ty = "&mut Chat", value = "&mut *self" },
+  { name = "font", ty = "&crate::font::Font", value = "font" },
+  { name = "message", ty = "&Message", value = "message" },
+  { name = "focused", ty = "bool", value = "focused" },
+]
+
+# Chat::add_recent: the sent messages the up arrow walks through (log::error! in its body).
+[[native.mixin]]
+id = "recent"
+target = "horizon_client_render::chat::Chat::add_recent"
+kind = "HEAD"
+cancellable = true
+helper = "src/mixins/limit_recent.rs"
+bindings = [
+  { name = "chat", ty = "&mut Chat", value = "&mut *self" },
+  { name = "message", ty = "&str", value = "message" },
+]

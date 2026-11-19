@@ -1,15 +1,15 @@
-// Chat::push_message as in Horizon 0a6e409923, with vanilla's 100 kept messages raised to 16384.
+// Chat::push_message as in Horizon 39f1a51b3c, with vanilla's 100 kept messages raised to 16384.
 fn more_chat_history_messages(
     chat: &mut Chat,
     font: &crate::font::Font,
     message: &Message,
     focused: bool,
-) -> core::ops::ControlFlow<()> {
+) -> ::core::ops::ControlFlow<()> {
     const LIMIT: usize = 16384;
     // The original body follows a Break, so the message is cloned, not moved.
     let mut message = message.clone();
     if !chat.abilities.shows(message.source) {
-        return core::ops::ControlFlow::Break(());
+        return ::core::ops::ControlFlow::Break(());
     }
     let plain = message.content.plain();
     crate::logging::write_only(log::Level::Info, &format!("[CHAT] {plain}"));
@@ -36,10 +36,10 @@ fn more_chat_history_messages(
             chat.scroll_by(last.wrapped as i32 - shown as i32, focused);
         }
         chat.messages.insert(0, last);
-        return core::ops::ControlFlow::Break(());
+        return ::core::ops::ControlFlow::Break(());
     }
     message.wrapped = chat.add_lines(font, &message, focused);
     chat.messages.insert(0, message);
     chat.messages.truncate(LIMIT);
-    core::ops::ControlFlow::Break(())
+    ::core::ops::ControlFlow::Break(())
 }

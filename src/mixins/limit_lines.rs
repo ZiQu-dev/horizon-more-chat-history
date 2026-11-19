@@ -1,16 +1,16 @@
-// Chat::add_lines as in Horizon 0a6e409923, with vanilla's 100 kept lines raised to 16384.
+// Chat::add_lines as in Horizon 39f1a51b3c, with vanilla's 100 kept lines raised to 16384.
 fn more_chat_history_lines(
     chat: &mut Chat,
     font: &crate::font::Font,
     message: &Message,
     focused: bool,
-) -> core::ops::ControlFlow<usize> {
+) -> ::core::ops::ControlFlow<usize> {
     const LIMIT: usize = 16384;
     let whole = message.content.strip_legacy().plain();
     if let Some(query) = &chat.search
         && !whole.to_lowercase().contains(query.as_str())
     {
-        return core::ops::ControlFlow::Break(0);
+        return ::core::ops::ControlFlow::Break(0);
     }
     let whole: std::sync::Arc<str> = whole.into();
     let mut count = 0;
@@ -38,5 +38,5 @@ fn more_chat_history_lines(
         );
     }
     chat.lines.truncate(LIMIT);
-    core::ops::ControlFlow::Break(count)
+    ::core::ops::ControlFlow::Break(count)
 }

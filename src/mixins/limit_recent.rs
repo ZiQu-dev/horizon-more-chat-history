@@ -1,5 +1,5 @@
-// Chat::add_recent as in Horizon 0a6e409923, with vanilla's 100 remembered sent messages raised to 16384.
-fn more_chat_history_recent(chat: &mut Chat, message: &str) -> core::ops::ControlFlow<()> {
+// Chat::add_recent as in Horizon 39f1a51b3c, with vanilla's 100 remembered sent messages raised to 16384.
+fn more_chat_history_recent(chat: &mut Chat, message: &str) -> ::core::ops::ControlFlow<()> {
     const LIMIT: usize = 16384;
     if chat.recent.last().map(String::as_str) != Some(message) {
         if chat.recent.len() >= LIMIT {
@@ -22,5 +22,5 @@ fn more_chat_history_recent(chat: &mut Chat, message: &str) -> core::ops::Contro
             }
         }
     }
-    core::ops::ControlFlow::Break(())
+    ::core::ops::ControlFlow::Break(())
 }
