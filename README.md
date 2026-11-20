@@ -23,3 +23,10 @@ to those functions needs the helpers updated.
 
 MIT. The helpers copy the bodies of three functions of [Horizon](https://github.com/horizon-rust/horizon) (MIT).
 Idea and value from More Chat History by JackFredMods (CC0-1.0); none of its code is used.
+
+## Status
+
+Pinned to Nightly 2026-11-19 (`5ef7734`), the first build with the markers. Builds and works with a launcher that has
+horizon-rust/horizon#18789 (the mirror crate keeps `crate::command`): in a game from that build, 300 chat lines sent
+through `horizon-ctl chat` all stay in the history; the same Nightly without the mod keeps 100. Launchers 0.2.78 and
+0.2.86 fail with `unresolved import crate::command` until #18789 is in a release.
