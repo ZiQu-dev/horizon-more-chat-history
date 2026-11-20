@@ -10,9 +10,9 @@ capabilities = ["registries"]
 
 [native]
 game = "26.3"
-# The first build with #[replaceable] on Chat::push_message, add_lines and add_recent
-# (horizon-rust/horizon#18356, merged as 39f1a51b3c): move this to the first Nightly that has it.
-horizon = "5ef7734fdd854add5efd6817178be3c988d8d050"
+# Nightly 2026-11-20. #[replaceable] on Chat::push_message, add_lines and add_recent is in since
+# horizon-rust/horizon#18356; building it needs a launcher with horizon-rust/horizon#18789 (merged 04b92a5b4b).
+horizon = "0a875da91dbb0fdcb7ba8c42c11341aa229af51a"
 mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"
 
 # Chat::push_message: `self.messages.truncate(100)`. Its body has println!, which the constant

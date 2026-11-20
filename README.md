@@ -26,7 +26,7 @@ Idea and value from More Chat History by JackFredMods (CC0-1.0); none of its cod
 
 ## Status
 
-Pinned to Nightly 2026-11-19 (`5ef7734`), the first build with the markers. Builds and works with a launcher that has
-horizon-rust/horizon#18789 (the mirror crate keeps `crate::command`): in a game from that build, 300 chat lines sent
-through `horizon-ctl chat` all stay in the history; the same Nightly without the mod keeps 100. Launchers 0.2.78 and
-0.2.86 fail with `unresolved import crate::command` until #18789 is in a release.
+Pinned to Nightly 2026-11-20 (`0a875da`). The chat markers (horizon-rust/horizon#18356) are in since `39f1a51b3c`; building
+needs a launcher with horizon-rust/horizon#18789 (merged as `04b92a5b4b`, not in a launcher release yet). With a launcher built
+from `main`, the mod builds and works: 300 chat lines sent through `horizon-ctl chat` all stay in the history; the same Nightly
+without the mod keeps 100. Launchers 0.2.78 and 0.2.86 fail with `unresolved import crate::command`.
