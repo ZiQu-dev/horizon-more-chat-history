@@ -93,7 +93,8 @@ fn more_chat_history_messages(
             );
             for mut old in earlier {
                 let count = chat.add_lines(font, &old, false);
-                let block: Vec<Line> = chat.lines.drain(..count).collect();
+                // add_lines caps the list, so a message that wrapped to more lines than the cap leaves fewer.
+                let block: Vec<Line> = chat.lines.drain(..count.min(chat.lines.len())).collect();
                 chat.lines.extend(block);
                 old.wrapped = count;
                 chat.messages.push(old);
@@ -108,7 +109,13 @@ fn more_chat_history_messages(
     if let Some(path) = &log_path {
         use std::io::Write;
         let (h, m) = message.time;
-        let text = plain.replace('\\', "\\\\").replace('\n', "\\n");
+        // A message of tens of thousands of lines is not worth keeping whole.
+        let text = plain
+            .chars()
+            .take(8192)
+            .collect::<String>()
+            .replace('\\', "\\\\")
+            .replace('\n', "\\n");
         if let Ok(mut file) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
             if writeln!(file, "{h}\t{m}\t{text}").is_ok() {
                 SAVED.fetch_add(1, ::core::sync::atomic::Ordering::Relaxed);
