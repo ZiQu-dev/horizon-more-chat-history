@@ -1,7 +1,7 @@
 id = "more_chat_history"
-name = "More Chat History"
-version = "0.2.0"
-description = "Raises the chat history from vanilla's 100 messages to 16384 and keeps it between sessions."
+name = "Chat Memory and History"
+version = "0.2.1"
+description = "Raises the chat history from vanilla's 100 messages to 16384, keeps it between sessions and keeps 1000 saved commands."
 authors = ["ZiQu-dev"]
 api = "0.2"
 side = "client"

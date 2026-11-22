@@ -1,4 +1,6 @@
-# More Chat History for Horizon
+# Chat Memory and History for Horizon
+
+(Formerly "More Chat History"; the id `more_chat_history` and the repository name stay.)
 
 A native Horizon mod (mixin bundle) that raises the chat history from vanilla's 100 messages to 16384,
 like [More Chat History](https://modrinth.com/mod/morechathistory) does on Fabric (CC0-1.0, JackFredMods).
@@ -6,7 +8,7 @@ No code of that mod is used; this one is written against Horizon's source.
 
 It changes three limits in `horizon_client_render::chat`: the remembered messages (`Chat::push_message`),
 the wrapped lines (`Chat::add_lines`) and the sent-message history of the up arrow (`Chat::add_recent`).
-The saved command history (`command_history.txt`) keeps vanilla's own limit.
+The saved command history (`command_history.txt`) keeps 1000 commands instead of vanilla's 50.
 
 It also keeps the chat between sessions, a feature of [Chat Patches](https://modrinth.com/mod/chatpatches)
 (LGPL-3.0, none of its code is used): every message is appended to `chat_history.log` in the game folder, and the
