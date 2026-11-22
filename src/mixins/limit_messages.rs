@@ -27,15 +27,58 @@ fn more_chat_history_messages(
         .filter(|_| std::thread::current().name() == Some("main"))
         .and_then(|file| file.parent())
         .map(|dir| dir.join("chat_history.log"));
+    // `chat_memory.properties` next to the log (written with these defaults on first use, read
+    // once per run): `save_history=false` turns the saving and restoring off, `max_file_mib` caps
+    // the log (only its last `max_file_mib` MiB is read and kept).
+    static SETTINGS: ::std::sync::OnceLock<(bool, u64)> = ::std::sync::OnceLock::new();
+    let (save, cap) = match &log_path {
+        Some(path) => *SETTINGS.get_or_init(|| {
+            let file = path.with_file_name("chat_memory.properties");
+            let (mut save, mut mib) = (true, 4u64);
+            match std::fs::read_to_string(&file) {
+                Ok(text) => {
+                    for line in text.lines() {
+                        match line.split_once('=') {
+                            Some(("save_history", v)) => save = v.trim() != "false",
+                            Some(("max_file_mib", v)) => mib = v.trim().parse().unwrap_or(4).clamp(1, 256),
+                            _ => {}
+                        }
+                    }
+                }
+                Err(_) => {
+                    let _ = std::fs::write(
+                        &file,
+                        "# Chat Memory and History. Restart the game after a change.\n\
+                         # false: nothing is saved to chat_history.log and nothing is restored.\n\
+                         save_history=true\n\
+                         # The log keeps about this many MiB of the newest messages.\n\
+                         max_file_mib=4\n",
+                    );
+                }
+            }
+            (save, mib * 1024 * 1024)
+        }),
+        None => (false, 0),
+    };
+    let log_path = log_path.filter(|_| save);
     if let Some(path) = &log_path
         && (focused || message.added >= 200)
         && !RESTORED.swap(true, ::core::sync::atomic::Ordering::Relaxed)
-        && let Ok(raw) = std::fs::read_to_string(path)
+        && let Ok(mut file) = std::fs::File::open(path)
     {
-        let all: Vec<&str> = raw.lines().collect();
-        if all.len() > LIMIT * 2 {
-            let _ = std::fs::write(path, all[all.len() - LIMIT..].join("\n") + "\n");
+        // Only the last `cap` bytes: a log that grew large is never read whole.
+        use std::io::{Read, Seek};
+        let len = file.metadata().map(|m| m.len()).unwrap_or(0);
+        let start = len.saturating_sub(cap);
+        let mut bytes = Vec::new();
+        let _ = file.seek(std::io::SeekFrom::Start(start));
+        let _ = file.take(cap).read_to_end(&mut bytes);
+        let mut raw = String::from_utf8_lossy(&bytes).into_owned();
+        if start > 0 {
+            // The first line is cut in the middle.
+            raw = raw.split_once('\n').map(|(_, rest)| rest.to_owned()).unwrap_or_default();
         }
+        let all: Vec<&str> = raw.lines().collect();
         let keep = all.len().saturating_sub(SAVED.load(::core::sync::atomic::Ordering::Relaxed));
         let from = keep.saturating_sub(LIMIT);
         let mut earlier: Vec<Message> = Vec::new();
@@ -119,6 +162,22 @@ fn more_chat_history_messages(
         if let Ok(mut file) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
             if writeln!(file, "{h}\t{m}\t{text}").is_ok() {
                 SAVED.fetch_add(1, ::core::sync::atomic::Ordering::Relaxed);
+            }
+        }
+        // A chat-spamming server must not grow the log without limit: every 256 messages, a log
+        // over twice the cap is cut to its newest `cap` bytes (whole lines).
+        if SAVED.load(::core::sync::atomic::Ordering::Relaxed) % 256 == 0
+            && let Ok(meta) = std::fs::metadata(path)
+            && meta.len() > cap * 2
+            && let Ok(mut file) = std::fs::File::open(path)
+        {
+            use std::io::{Read, Seek};
+            let mut bytes = Vec::new();
+            let _ = file.seek(std::io::SeekFrom::Start(meta.len() - cap));
+            let _ = file.take(cap).read_to_end(&mut bytes);
+            let raw = String::from_utf8_lossy(&bytes).into_owned();
+            if let Some((_, rest)) = raw.split_once('\n') {
+                let _ = std::fs::write(path, rest);
             }
         }
     }

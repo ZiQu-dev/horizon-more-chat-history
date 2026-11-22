@@ -27,6 +27,12 @@ rewrite. Each of the three functions gets a `HEAD` mixin with `cancellable = tru
 (`src/mixins/limit_*.rs`) is a copy of the body with the new limit, and the original body is skipped. A Horizon change
 to those functions needs the helpers updated.
 
+Privacy: `chat_history.log` holds everything the chat shows, private messages included, in plain text and in one file for
+all worlds and servers (the mod API has no join hook to tell them apart). The first run writes `chat_memory.properties`
+next to it: `save_history=false` turns the saving and restoring off, `max_file_mib` (default 4) caps the log. The log is
+cut to its newest part every 256 messages once it passes twice the cap, and only its last `max_file_mib` MiB is ever read.
+Restart the game after a change.
+
 Restoring waits for the first message that arrives 10 seconds into the session (or any message while the chat is
 open): until then the restored lines would be drawn like new ones for their 200 ticks. Single player runs a second,
 invisible `Chat` on the "Server thread" that gets the same messages; only the window's own (the `main` thread) reads and
