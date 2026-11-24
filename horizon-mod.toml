@@ -1,11 +1,11 @@
 id = "more_chat_history"
 name = "Chat Memory and History"
-version = "0.3.0"
-description = "Raises the chat history from vanilla's 100 messages to 16384, keeps it between sessions and keeps 1000 saved commands."
+version = "0.4.0"
+description = "Keeps up to 16384 chat messages, saves them between sessions, plays a keyboard click on chat messages and has a settings page."
 authors = ["ZiQu-dev"]
 api = "0.2"
 side = "client"
-# The manifest format requires this value; the mod registers nothing.
+# The manifest format requires a value; the mod registers only settings.
 capabilities = ["registries"]
 
 [native]

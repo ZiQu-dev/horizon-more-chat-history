@@ -1,0 +1,31 @@
+{
+  "message": {
+    "subtitle": "more_chat_history.subtitle.message",
+    "sounds": [
+      {
+        "name": "more_chat_history:message_1",
+        "volume": 1.0
+      },
+      {
+        "name": "more_chat_history:message_2",
+        "volume": 1.0
+      },
+      {
+        "name": "more_chat_history:message_3",
+        "volume": 1.0
+      },
+      {
+        "name": "more_chat_history:message_4",
+        "volume": 1.0
+      },
+      {
+        "name": "more_chat_history:message_5",
+        "volume": 1.0
+      },
+      {
+        "name": "more_chat_history:message_6",
+        "volume": 1.0
+      }
+    ]
+  }
+}

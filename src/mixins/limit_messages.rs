@@ -27,37 +27,30 @@ fn more_chat_history_messages(
         .filter(|_| std::thread::current().name() == Some("main"))
         .and_then(|file| file.parent())
         .map(|dir| dir.join("chat_history.log"));
-    // `chat_memory.properties` next to the log (written with these defaults on first use, read
-    // once per run): `save_history=false` turns the saving and restoring off, `max_file_mib` caps
-    // the log (only its last `max_file_mib` MiB is read and kept).
-    static SETTINGS: ::std::sync::OnceLock<(bool, u64)> = ::std::sync::OnceLock::new();
+    // The settings page's values (Options > Mods) as the mod's hooks write them to
+    // `horizon-mod-data/more_chat_history/settings.txt`: `save_history=false` turns the saving
+    // and restoring off, `max_file_mib` caps the log (only its newest part is read and kept).
+    // Defaults until the file exists. Read for each message: it is two short lines.
     let (save, cap) = match &log_path {
-        Some(path) => *SETTINGS.get_or_init(|| {
-            let file = path.with_file_name("chat_memory.properties");
+        Some(path) => {
+            let file = path
+                .with_file_name("horizon-mod-data")
+                .join("more_chat_history")
+                .join("settings.txt");
             let (mut save, mut mib) = (true, 4u64);
-            match std::fs::read_to_string(&file) {
-                Ok(text) => {
-                    for line in text.lines() {
-                        match line.split_once('=') {
-                            Some(("save_history", v)) => save = v.trim() != "false",
-                            Some(("max_file_mib", v)) => mib = v.trim().parse().unwrap_or(4).clamp(1, 256),
-                            _ => {}
+            if let Ok(text) = std::fs::read_to_string(&file) {
+                for line in text.lines() {
+                    match line.split_once('=') {
+                        Some(("save_history", v)) => save = v.trim() != "false",
+                        Some(("max_file_mib", v)) => {
+                            mib = v.trim().parse().unwrap_or(4).clamp(1, 256)
                         }
+                        _ => {}
                     }
-                }
-                Err(_) => {
-                    let _ = std::fs::write(
-                        &file,
-                        "# Chat Memory and History. Restart the game after a change.\n\
-                         # false: nothing is saved to chat_history.log and nothing is restored.\n\
-                         save_history=true\n\
-                         # The log keeps about this many MiB of the newest messages.\n\
-                         max_file_mib=4\n",
-                    );
                 }
             }
             (save, mib * 1024 * 1024)
-        }),
+        }
         None => (false, 0),
     };
     let log_path = log_path.filter(|_| save);

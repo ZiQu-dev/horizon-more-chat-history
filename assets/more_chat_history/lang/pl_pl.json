@@ -1,0 +1,13 @@
+{
+  "more_chat_history.subtitle.message": "Wiadomość na czacie",
+  "more_chat_history.setting.save_history": "Zachowaj czat między sesjami",
+  "more_chat_history.setting.save_history.tooltip": "Zapisuje każdą wiadomość, którą pokazuje czat (także prywatne), w chat_history.log w folderze gry i pokazuje najnowsze w następnej sesji.",
+  "more_chat_history.setting.max_file_mib": "Limit rozmiaru zapisanego czatu (MiB)",
+  "more_chat_history.setting.max_file_mib.tooltip": "chat_history.log trzyma mniej więcej tyle najnowszych wiadomości.",
+  "more_chat_history.setting.sound": "Dźwięk wiadomości na czacie",
+  "more_chat_history.setting.sound.tooltip": "Krótkie kliknięcie klawiatury, losowe z sześciu, gdy przyjdzie wiadomość od innego gracza.",
+  "more_chat_history.setting.sound_volume": "Głośność dźwięku wiadomości",
+  "more_chat_history.setting.sound_own": "Dźwięk dla własnych wiadomości",
+  "more_chat_history.setting.sound_system": "Dźwięk dla wiadomości serwera i systemu",
+  "more_chat_history.setting.sound_system.tooltip": "Wejścia graczy, śmierci, wyniki komend i inne linie, które nie są od gracza."
+}

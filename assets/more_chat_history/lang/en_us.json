@@ -1,0 +1,13 @@
+{
+  "more_chat_history.subtitle.message": "Chat message",
+  "more_chat_history.setting.save_history": "Keep chat between sessions",
+  "more_chat_history.setting.save_history.tooltip": "Saves every message the chat shows (private ones too) to chat_history.log in the game folder and shows the newest ones again next session.",
+  "more_chat_history.setting.max_file_mib": "Saved chat size limit (MiB)",
+  "more_chat_history.setting.max_file_mib.tooltip": "chat_history.log keeps about this much of the newest messages.",
+  "more_chat_history.setting.sound": "Sound on chat messages",
+  "more_chat_history.setting.sound.tooltip": "A short keyboard click, picked at random from six, when a message from another player arrives.",
+  "more_chat_history.setting.sound_volume": "Message sound volume",
+  "more_chat_history.setting.sound_own": "Sound for your own messages",
+  "more_chat_history.setting.sound_system": "Sound for server and system messages",
+  "more_chat_history.setting.sound_system.tooltip": "Joins, deaths, command output and other lines that are not from a player."
+}
